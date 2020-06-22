@@ -1,0 +1,29 @@
+{
+  "name": "mpya",
+  "version": "1.0.0",
+  "description": "Files Managments",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "./node_modules/.bin/env-cmd -f ./config/dev.env nodemon src/index.js",
+    "postinstall": "sudo apt-get update -y; sudo apt-get install -y graphicsmagick;",
+    "create_admin": "./node_modules/.bin/env-cmd -f ./config/dev.env node src/createAdmin.js"
+  },
+  "author": "Boudawara Achraf",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "env-cmd": "^10.1.0",
+    "express": "^4.17.1",
+    "fs-extra": "^9.0.1",
+    "gm": "^1.23.1",
+    "gm-base64": "^1.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.5.8",
+    "mongoose": "^5.9.9",
+    "multer": "^1.4.2",
+    "pdf2pic": "^1.4.0",
+    "validator": "^13.1.0"
+  }
+}
