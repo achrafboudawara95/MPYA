@@ -1,0 +1,827 @@
+openapi: 3.0.0
+info:
+  description: This file to describe MPYA Project
+  version: 1.0.0
+  title: MPYA API
+  contact:
+    email: achrafboudawarafseg@gmail.com
+paths:
+  /users/signup:
+    post:
+      tags:
+        - User
+      summary: Signup
+      description: ""
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        description: User object that needs to be added to the application
+        required: true
+      responses:
+        "200":
+          description: User created
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  token:
+                    type: string
+        "400":
+          description: Invalid input
+  /users/login:
+    post:
+      tags:
+        - User
+      summary: Login
+      description: ""
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+        description: User object that needs to be added to the application
+        required: true
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  token:
+                    type: string
+        "401":
+          description: Unthorized
+  /users/logout:
+    post:
+      tags:
+        - User
+      summary: logout User
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User out
+  /users/me:
+    get:
+      tags:
+        - User
+      summary: User connected
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /users:
+    patch:
+      tags:
+        - User
+      summary: Edit Profile
+      description: ""
+      operationId: editUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid input
+  /documents:
+    post:
+      tags:
+        - Document
+      summary: add document
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+                identifier:
+                  type: string
+                pdf:
+                  type: object
+                  format: binary
+                  description: input file pdf
+                keywords:
+                  type: string
+                  description: format = key1,key2,key3
+                  example: key1,key2,key3
+                events:
+                  type: string
+                  description: format = event1,event2,event3
+                  example: event1,event2,event3
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: document created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: Invalid input
+    get:
+      tags:
+        - Document
+      summary: get documents
+      parameters:
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+          description: exemple name:asc or name:desc or nbViews:asc2
+      responses:
+        200:
+          description: documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentDTO"
+        "401":
+          description: unauthorized
+  /user/documents:
+    get:
+      tags:
+        - User Document
+      summary: User documents
+      parameters:
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+          description: exemple name:asc or name:desc or nbViews:asc2
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: Get User documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /user/document/{id_document}/versions:
+    get:
+      tags:
+        - User Version
+      summary: User document versions
+      parameters:
+        - in: path
+          name: id_document
+          schema:
+            type: string
+          required: true
+          description: ID of the document
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: Get User document versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Version"
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /user/version/{id_version}:
+    get:
+      tags:
+        - User Version
+      summary: version by id
+      parameters:
+        - in: path
+          name: id_version
+          schema:
+            type: string
+          required: true
+          description: ID of the version
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: Get version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Version"
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /user/version/{id_version}/preview:
+    get:
+      tags:
+        - User Version
+      summary: version image
+      parameters:
+        - in: path
+          name: id_version
+          schema:
+            type: string
+          required: true
+          description: ID of the version
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+            description: version image 
+            content:
+              image/png:
+                schema:
+                  type: string
+                  format: binary
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /user/version/{id_version}/file:
+    get:
+      tags:
+        - User Version
+      summary: version file
+      parameters:
+        - in: path
+          name: id_version
+          schema:
+            type: string
+          required: true
+          description: ID of the version
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+            description: version file 
+            content:
+              application/pdf:
+                schema:
+                  type: string
+                  format: binary
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /documents/{id}:
+    patch:
+      tags:
+        - Document
+      summary: add document
+      description: If name or pdf file will be change a new version will be created
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the document
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+                identifier:
+                  type: string
+                pdf:
+                  type: object
+                  format: binary
+                  description: input file pdf
+                keywords:
+                  type: string
+                  description: format = key1,key2,key3
+                  example: key1,key2,key3
+                events:
+                  type: string
+                  description: format = event1,event2,event3
+                  example: event1,event2,event3
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: document updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: Invalid input
+  /documents/byid/{id}/:
+    get:
+      tags:
+        - Document
+      summary: get document by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the document
+      responses:
+          "200":
+            description: document 
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DocumentDTO"
+          "400":
+            description: Invalid input
+  /documents/byidentifier/{code}/:
+    get:
+      tags:
+        - Document
+      summary: get document by identifier
+      parameters:
+        - in: path
+          name: code
+          schema:
+            type: string
+          required: true
+          description: Identifier of the document
+      responses:
+          "200":
+            description: document 
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DocumentDTO"
+          "400":
+            description: Invalid input
+  /documents/byaddress/{address}:
+    get:
+      tags:
+        - Document
+      summary: get document by address
+      parameters:
+        - in: path
+          name: address
+          schema:
+            type: string
+          required: true
+          description: address
+      responses:
+          "200":
+            description: document 
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/DocumentDTO"
+          "400":
+            description: Invalid input
+  /documents/{id}/simmilar:
+    get:
+      tags:
+        - Document
+      summary: get documents simmilar to document
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "200":
+            description: document 
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/DocumentDTO"
+          "400":
+            description: Invalid input
+  /documents/{id}/preview:
+    get:
+      tags:
+        - Document
+      summary: get document image
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "200":
+            description: document 
+            content:
+              image/png:
+                schema:
+                  type: string
+                  format: binary
+  /documents/{id}/save:
+    get:
+      tags:
+        - Document
+      summary: save the document
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "200":
+            description: document saved
+          "400":
+            description: already saved 
+          "404":
+            description: document not found
+  /documents/{id}/unsave:
+    get:
+      tags:
+        - Document
+      summary: unsave the document
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "200":
+            description: document unsaved
+          "400":
+            description: not saved
+          "404":
+            description: document not found
+  /documents/{id}/view:
+    get:
+      tags:
+        - Document
+      summary: get document and view
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "404":
+            description: document not found
+          "200":
+            description: document 
+            content:
+              application/pdf:
+                schema:
+                  type: string
+                  format: binary
+  /documents/{id}/download:
+    get:
+      tags:
+        - Document
+      summary: get document and download
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the document
+      responses:
+          "404":
+            description: document not found
+          "200":
+            description: document 
+            content:
+              application/pdf:
+                schema:
+                  type: string
+                  format: binary
+  /admin/login:
+    post:
+      tags:
+        - Admin
+      summary: Login
+      description: ""
+      operationId: login admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+        description: Admin object that needs to be added to the application
+        required: true
+      responses:
+        "200":
+          description: Admin
+          content:
+            application/json:
+              schema:
+                properties:
+                  user:
+                    $ref: "#/components/schemas/Admin"
+                  token:
+                    type: string
+        "401":
+          description: Unthorized
+  /admin/logout:
+    post:
+      tags:
+        - Admin
+      summary: logout Admin
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Admin out
+  /admin/me:
+    get:
+      tags:
+        - Admin
+      summary: Admin connected
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: Admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Admin"
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+servers:
+  - url: https://localhost:3000/
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+        company:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+      xml:
+        name: User
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        identifier:
+          type: string
+          readOnly: true
+        keywords:
+          type: array
+          items:
+            type: string
+        events:
+          type: array
+          items:
+            type: string
+        nbVersions:
+          type: integer
+          readOnly: true
+        nbViews:
+          type: integer
+          readOnly: true
+        nbSaves:
+          type: integer
+          readOnly: true
+        nbDownloads:
+          type: integer
+          readOnly: true
+        disabledAt:
+          type: string
+          readOnly: true
+        user:
+          $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+      xml:
+        name: Document
+    DocumentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        identifier:
+          type: string
+          readOnly: true
+        keywords:
+          type: array
+          items:
+            type: string
+        events:
+          type: array
+          items:
+            type: string
+        nbVersions:
+          type: integer
+          readOnly: true
+        nbViews:
+          type: integer
+          readOnly: true
+        nbSaves:
+          type: integer
+          readOnly: true
+        nbDownloads:
+          type: integer
+          readOnly: true
+        disabledAt:
+          type: string
+          readOnly: true
+        user:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          readOnly: true
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+        saved:
+          type: boolean
+          readOnly: true
+      xml:
+        name: DocumentDTO
+    Version:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        number:
+          type: integer
+          readOnly: true
+        document:
+          $ref: "#/components/schemas/Document"
+        nbViews:
+          type: integer
+          readOnly: true
+        nbSaves:
+          type: integer
+          readOnly: true
+        nbDownloads:
+          type: integer
+          readOnly: true
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+    Admin:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        username:
+          type: string
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+      xml:
+        name: User

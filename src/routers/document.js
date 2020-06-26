@@ -220,6 +220,23 @@ router.get('/documents', userMiddleware, async (req,res) =>{
     }
 })
 
+router.get('/user/documents', authMiddleware, async (req,res) =>{
+    const sort = {}
+    if (req.query.sortBy){
+        const parts = req.query.sortBy.split(':')
+        sort[parts[0]] = parts[1] === 'asc' ? 1 : -1
+    }
+    try {
+        const documents = await Document.find({disabledAt: null, user: req.user._id})
+            .limit(parseInt(req.query.limit))
+            .skip(parseInt(req.query.skip))
+            .sort(sort)
+        res.send(documents)
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
 router.get('/documents/byid/:id/', userMiddleware, async (req, res) => {
     try {
         const document = await Document.findOne({_id: req.params.id, disabledAt: null})
